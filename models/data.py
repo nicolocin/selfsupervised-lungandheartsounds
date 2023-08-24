@@ -19,6 +19,7 @@ import h5py as h5
 import copy
 from glob import glob
 
+
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 torch.autograd.set_detect_anomaly(True)
@@ -611,7 +612,7 @@ class HeartDataset(Dataset):
             IDs = set([line.strip() for line in f])
             df = df[df.ID.isin(IDs)]
             df = df.reset_index()
-            IDs = set(random.sample(IDs, int(train_prop * len(IDs))))
+            IDs = set(random.sample(list(IDs), int(train_prop * len(IDs))))
         return df[df.ID.isin(IDs)]
 
 
@@ -840,7 +841,7 @@ def h5ify(base_dir, label_file, train_prop):
         IDs = set()
         with open(split_file_path, "r") as f:
             IDs = set([line.strip() for line in f])
-            IDs = set(random.sample(IDs, int(train_prop * len(IDs))))
+            IDs = set(random.sample(list(IDs), int(train_prop * len(IDs))))
         return df[df.ID.isin(IDs)]
 
     def get_data(cycle):
