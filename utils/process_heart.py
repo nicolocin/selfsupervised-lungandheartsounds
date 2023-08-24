@@ -85,7 +85,7 @@ def process(data_path='../heart', labels_only=False):
 
             # pad audio if < forced_max_len
             a_len = compute_len(samp_rate=samplingrate, time=force_max_len)
-            padded_data = lb.util.pad_center(sliced_data, a_len)
+            padded_data = lb.util.pad_center(sliced_data, size=a_len)
             path = os.path.join(processed_dir, label, save_name)
             sf.write(file=path, data=padded_data, samplerate=samplingrate)
 
