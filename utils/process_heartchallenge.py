@@ -52,7 +52,7 @@ def get_labeldf(audio_loc):
                 end = len(audio) / audio.samplerate
                 data.append([file, la.heart_challenge_row_label(row), 0, end])
         else:
-            files = glob(folder + "/*")
+            files = glob(folder + "/*.wav")
             for file in files:
                 file = fi.split_path(file).split(".")[0]
                 audio = sf.SoundFile(os.path.join(folder, file + ".wav"))
@@ -115,7 +115,7 @@ def process(data_path='../heartchallenge', labels_only=False):
 
                 # pad audio if < forced_max_len
                 a_len = compute_len(samp_rate=samplingrate, time=force_max_len)
-                padded_data = lb.util.pad_center(sliced_data, a_len)
+                padded_data = lb.util.pad_center(sliced_data, size=a_len)
                 path = os.path.join(processed_dir, label, save_name)
                 sf.write(file=path, data=padded_data, samplerate=samplingrate)
 
