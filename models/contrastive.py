@@ -933,7 +933,7 @@ class ContrastiveLearner(object):
 
 
 def pretrain_(epochs, task, base_dir, log_dir, augment, train_prop=1, exp=None, restore=False):
-    log_file = os.path.join(log_dir, f"pretraintrain_log.txt")
+    log_file = os.path.join(log_dir, f"pretraintrain_log_prop_{train_prop}.txt")
 
     num_epochs = epochs
     batch_size = 16
@@ -941,7 +941,7 @@ def pretrain_(epochs, task, base_dir, log_dir, augment, train_prop=1, exp=None, 
         batch_size = 5
     learning_rate = .00001
 
-    with open(os.path.join(log_dir, "pretrain_params.txt"), "w") as f:
+    with open(os.path.join(log_dir, f"pretrain_params_prop_{train_prop}.txt"), "w") as f:
         f.write(f"Epochs: {num_epochs}\n")
         f.write(f"Batch size: {batch_size}\n")
         f.write(f"Learning rate: {learning_rate}\n")
@@ -955,14 +955,20 @@ def pretrain_(epochs, task, base_dir, log_dir, augment, train_prop=1, exp=None, 
 
 
 def train_(epochs, task, base_dir, log_dir, evaluator, augment, folds=5, train_prop=1, full_data=False, model_num=0):
-    log_file = os.path.join(log_dir, f"train_log.txt")
+    log_file = os.path.join(log_dir, f"train_log_{task}_{model_num}.txt")
 
     num_epochs = epochs
     batch_size = 16
     learning_rate = .00001
+    label_file = os.path.join(base_dir, "processed", "{}_labels.csv".format(task))
     if evaluator is not None:
         print("Evaluator: " + evaluator)
-    with open(os.path.join(log_dir, "train_params.txt"), "w") as f:
+
+    with open(os.path.join(log_dir, f"train_params_{task}_{model_num}.txt"), "w") as f:
+        f.write(f"Model: {model_num}\n")
+        f.write(f"Task: {task}\n")
+        f.write(f"Label File: {label_file}\n\n")
+
         f.write(f"Folds: {folds}\n")
         f.write(f"Epochs: {num_epochs}\n")
         f.write(f"Batch size: {batch_size}\n")
@@ -970,7 +976,6 @@ def train_(epochs, task, base_dir, log_dir, evaluator, augment, folds=5, train_p
         f.write(f"Proportion of training data: {train_prop}\n")
         f.write(f"Evaluator: {evaluator}\n")
 
-    label_file = os.path.join(base_dir, "processed", "{}_labels.csv".format(task))
     if not full_data:
         dataset = get_dataset(task, label_file, base_dir, split="train", train_prop=train_prop)
     else:
@@ -1022,7 +1027,7 @@ def distill_(epochs, task, base_dir, log_dir, evaluator, augment, folds=5, train
 
 
 def test_(task, base_dir, log_dir, evaluator, seed=None, model_num=0):
-    log_file = os.path.join(log_dir, f"test_log.txt")
+    log_file = os.path.join(log_dir, f"test_log_{task}_{model_num}.txt")
     with open(log_file, "a+") as f:
         f.write(f"Seed: {seed}\n")
     label_file = os.path.join(base_dir, "processed", "{}_labels.csv".format(task))
@@ -1035,7 +1040,7 @@ def test_(task, base_dir, log_dir, evaluator, seed=None, model_num=0):
     except FileNotFoundError:
         encoder = None
     auc = learner.test(task, label_file, log_file, encoder, log_dir, evaluator_type=evaluator, model_num=model_num)
-    auc_file = os.path.join(log_dir, "auc.csv")
+    auc_file = os.path.join(log_dir, f"auc_{task}_{model_num}.csv")
     with open(auc_file, "a") as f:
         f.write("{:.3f}\n".format(auc))
 
